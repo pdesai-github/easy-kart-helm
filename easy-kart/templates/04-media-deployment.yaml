@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: easy-kart-cart
+  name: easy-kart-media
   namespace: easy-kart
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: easy-kart-cart #This should be same label
+      app: easy-kart-media #This should be same label
   template:
     metadata:
       labels:
-        app: easy-kart-cart #This should be same label
+        app: easy-kart-media #This should be same label
     spec:
       containers:
-      - name: easy-kart-cart
-        image: pdesaidocker/easy-kart-api-cart:230
+      - name: easy-kart-media
+        image: pdesaidocker/easy-kart-api-media:231
         resources:
           requests:
             memory: "128Mi"   # Minimum memory for the container to function
@@ -26,30 +26,20 @@ spec:
         ports:
         - containerPort: 8080 #port defined in image dockerfile
         env:
-        - name: CosmosDB__endpoint
+        - name: StorageConnectionString
           valueFrom:
             secretKeyRef:
-                name: easy-kart-secret  
-                key: cosmosendpoint
-        - name: CosmosDB__authKey
-          valueFrom:
-            secretKeyRef:
-                name: easy-kart-secret  
-                key: cosmosauthkey
-        - name: ConnectionStrings__azservicebusconnstr
-          valueFrom:
-            secretKeyRef:
-                name: easy-kart-secret  
-                key: azservicebusconnstr
+              name: easy-kart-secret  
+              key: storageauthkey
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: easy-kart-cart-service
+  name: easy-kart-media-service
   namespace: easy-kart
 spec:
   selector:
-    app: easy-kart-cart #This should be same label
+    app: easy-kart-media #This should be same label
   ports:
     - protocol: TCP
       port: 80 #Other pods in the cluster can connect to this service on port 80
@@ -59,10 +49,10 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: easy-kart-cart-ingress
+  name: easy-kart-media-ingress
   namespace: easy-kart
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /api/cart/$2
+    nginx.ingress.kubernetes.io/rewrite-target: /api/images/$2
     nginx.ingress.kubernetes.io/use-regex: 'true'
     ingress.class: "nginx"
 spec:
@@ -71,11 +61,11 @@ spec:
     - host: easy-kart.pdtechhub.in
       http:
         paths:
-          - path: /cart(/|$)(.*)
+          - path: /images(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
-                name: easy-kart-cart-service
+                name: easy-kart-media-service
                 port:
                   number: 80
 ---
