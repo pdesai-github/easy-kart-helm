@@ -97,3 +97,26 @@ spec:
                 port:
                   number: 80
 ---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: easy-kart-productdetails-ingress
+  namespace: easy-kart
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /api/ProductDetails/$2
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+    ingress.class: "nginx"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: easy-kart.pdtechhub.in
+      http:
+        paths:
+          - path: /productdetails(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: easy-kart-products-service
+                port:
+                  number: 80
+---
