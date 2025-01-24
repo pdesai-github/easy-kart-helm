@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: easy-kart-reviews
-        image: pdesaidocker/easy-kart-api-reviews:243
+        image: pdesaidocker/easy-kart-api-reviews:247
         resources:
           requests:
             memory: "256Mi"   # Minimum memory for the container to function
